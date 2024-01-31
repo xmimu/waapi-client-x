@@ -9,6 +9,7 @@
 """
 
 from waapix.client import SoundEngineClient, WwiseCoreClient, UIClient
+from waapix.data_class import *
 
 
 class WaapiClientX(SoundEngineClient, WwiseCoreClient, UIClient):

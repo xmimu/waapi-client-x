@@ -10,6 +10,7 @@
 
 from waapi import WaapiClient
 from waapix.contains.uri import *
+from waapix.data_class import *
 
 
 class SoundEngineClient(WaapiClient):
@@ -94,35 +95,52 @@ class SoundEngineClient(WaapiClient):
 class WwiseCoreClient(WaapiClient):
 
     # region Core Method
-    def undo_begin_group(self):
-        pass
+    def undo_begin_group(self) -> None:
+        self.call(ak_wwise_core_undo_beginGroup)
 
-    def undo_cancel_group(self):
-        pass
+    def undo_cancel_group(self, undo: bool = False) -> None:
+        self.call(ak_wwise_core_undo_cancelGroup, {'undo': undo})
 
-    def undo_end_group(self):
-        pass
+    def undo_end_group(self, name) -> None:
+        self.call(ak_wwise_core_undo_endGroup, {'displayName': name})
 
-    def undo(self):
-        pass
+    def undo(self) -> None:
+        self.call(ak_wwise_core_undo_undo)
 
-    def transport_create(self):
-        pass
+    def transport_create(self, t_obj: TransportObject) -> int:
+        """
+        针对给定 Wwise 对象创建走带对象。可使用返回的走带对象来播放、停止、暂停和继续播放 Wwise 对象（通过另一走带函数实现）。
+        :param w_obj: Wwise 对象
+        :param g_obj:
+        :return: { 'transport': transport_id }
+        """
+        return self.call(ak_wwise_core_transport_create, t_obj.as_args())['transport']
 
-    def transport_destroy(self):
-        pass
+    def transport_destroy(self, transport_id: int) -> None:
+        self.call(ak_wwise_core_transport_destroy, {'transport': transport_id})
 
-    def transport_execute_action(self):
-        pass
+    def transport_execute_action(self, action: TransportAction, transport_id: int | None = None):
+        """
+        针对给定走带对象或所有走带对象（如未作任何指定）执行某项动作。
+        :param action: play, pause, stop...
+        :param transport_id:
+        :return:
+        """
+        self.call(ak_wwise_core_transport_executeAction, {'transport': transport_id, 'action': action.value})
 
-    def transport_get_list(self):
-        pass
+    def transport_get_list(self) -> list[TransportObject]:
+        data = []
+        for i in self.call(ak_wwise_core_transport_getList)['list']:
+            obj = TransportObject(i['object'], i['gameObject'], i['transport'])
+            data.append(obj)
+        return data
 
-    def transport_get_state(self):
-        pass
+    def transport_get_state(self, transport_id: int) -> TransportState:
+        result = self.call(ak_wwise_core_transport_getState, {'transport': transport_id})
+        return TransportState(result['state'])
 
-    def transport_prepare(self):
-        pass
+    def transport_prepare(self, w_obj: str):
+        self.call(ak_wwise_core_transport_prepare, {'object': w_obj})
 
     def switch_add_assignment(self):
         pass
