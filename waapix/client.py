@@ -9,7 +9,7 @@
 """
 
 from waapi import WaapiClient
-from waapix.contains.uri import *
+from waapix.constants.uri import *
 from waapix.data_class import *
 
 

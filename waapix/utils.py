@@ -32,7 +32,7 @@ def get_functions():
             topics.append(row)
         topics.append('# endregion Topics\n')
 
-    with open('contains/uri.py', 'w', encoding='utf-8') as f:
+    with open('constants/uri.py', 'w', encoding='utf-8') as f:
         f.writelines(functions + topics)
 
 
@@ -44,7 +44,7 @@ def get_commands():
             row = re.sub(r'[^\w]', '_', i).strip('_') + f" = '{i}'\n"
             commands.append(row)
 
-    with open('contains/commands.py', 'w', encoding='utf-8') as f:
+    with open('constants/commands.py', 'w', encoding='utf-8') as f:
         f.writelines(commands)
 
 
@@ -58,9 +58,9 @@ def get_obj_types():
                 row = name + f" = '{name}'\n"
                 w_obj_list.append(row)
 
-    with open('contains/object.py', 'w', encoding='utf-8') as f:
+    with open('constants/object.py', 'w', encoding='utf-8') as f:
         f.writelines(w_obj_list)
-    with open('contains/objects.json', 'w', encoding='utf-8') as f:
+    with open('constants/objects.json', 'w', encoding='utf-8') as f:
         text = json.dumps(result['return'], ensure_ascii=False, indent=2)
         f.write(text)
 
