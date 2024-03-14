@@ -8,6 +8,7 @@
 @Description:
 """
 
+from typing import Literal
 from waapi import WaapiClient
 from waapix.constants.uri import *
 from waapix.data_class import *
@@ -139,17 +140,20 @@ class WwiseCoreClient(WaapiClient):
         result = self.call(ak_wwise_core_transport_getState, {'transport': transport_id})
         return TransportState(result['state'])
 
-    def transport_prepare(self, w_obj: str):
+    def transport_prepare(self, w_obj: str) -> None:
         self.call(ak_wwise_core_transport_prepare, {'object': w_obj})
 
-    def switch_add_assignment(self):
-        pass
+    def switch_add_assignment(self, child_obj: str, state_obj: str) -> None:
+        self.call(ak_wwise_core_switchContainer_addAssignment,
+                  {'child': child_obj, 'stateOrSwitch': state_obj})
 
-    def switch_get_assignment(self):
-        pass
+    def switch_get_assignment(self, w_obj: str) -> None:
+        self.call(ak_wwise_core_switchContainer_getAssignments, {'id': w_obj})
 
-    def switch_remove_assignment(self):
-        pass
+    def switch_remove_assignment(self, child_obj: str, state_obj: str) -> None:
+        '''移除的对象须为 Switch Container 的子对象且当前指派给了 State。'''
+        self.call(ak_wwise_core_switchContainer_removeAssignment,
+                  {'child': child_obj, 'stateOrSwitch': state_obj})
 
     def bank_convert_external_sources(self):
         pass
@@ -157,11 +161,16 @@ class WwiseCoreClient(WaapiClient):
     def bank_generate(self):
         pass
 
-    def bank_get_inclusions(self):
-        pass
+    def bank_get_inclusions(self, w_obj: str) -> list:
+        result = self.call(ak_wwise_core_soundbank_getInclusions, {'soundbank': w_obj})
+        if result and 'inclusions' in result:
+            return result['inclusions']
+        return []
 
-    def bank_set_inclusions(self):
-        pass
+    def bank_set_inclusions(self, w_obj: str, inclusions: list,
+                            operation: Literal['add', 'remove', 'replace'] = 'add') -> None:
+        self.call(ak_wwise_core_soundbank_setInclusions,
+                  {'soundbank': w_obj, 'operation': operation, 'inclusions': inclusions})
 
     def bank_process_definition_files(self):
         pass
