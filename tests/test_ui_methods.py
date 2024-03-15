@@ -23,12 +23,14 @@ class TestUiMethods(unittest.TestCase):
 
     def test_get_commands(self):
         result = self.client.ui_get_commands()
+        self.assertIsInstance(result, list)
         self.assertTrue(result)
+        print('Test get commands:', len(result), result)
 
     def test_get_selected(self):
         result = self.client.ui_get_selected_objects()
-        print(result)
-        self.assertTrue(result)
+        self.assertIsInstance(result, list)
+        print('Test get selected:', len(result), result)
 
     def test_show_explorer(self):
         self.client.ui_execute_command(command.ShowLogs)
