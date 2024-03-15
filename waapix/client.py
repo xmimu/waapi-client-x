@@ -349,16 +349,17 @@ class UIClient(WaapiClient):
         """
         self.call(ak_wwise_ui_commands_unregister, commands)
 
-    def ui_get_selected_objects(self, options: list | None) -> list:
+    def ui_get_selected_objects(self, options: list | None = None) -> list:
         """
         获取在 Wwise 中选中的一系列对象，默认返回 [id, name]
         详细返回选项参考：https://www.audiokinetic.com/zh/library/2022.1.9_8365/?source=SDK&id=ak_wwise_ui_getselectedobjects.html
         :param options: [ {'return': ['id', 'name', 'type', 'notes'...]} ]
         :return:
         """
-        result = self.call(ak_wwise_ui_getSelectedObjects, options=options)
-        if result and result['return']:
-            return result['return']
+        if options is None: options = ['id', 'name', 'notes', 'type', 'path']
+        result = self.call(ak_wwise_ui_getSelectedObjects, options={'return': options})
+        if result and result['objects']:
+            return result['objects']
         else:
             return []
 
